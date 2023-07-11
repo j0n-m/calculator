@@ -67,8 +67,8 @@ button.special:hover {
 .container {
   border: 1px solid black;
   padding: 1rem 0.5rem;
-  min-height: 500px;
-  min-width: 400px;
+  height: 500px;
+  width: 400px;
   display: flex;
   background-color: rgb(240, 149, 59);
   border-radius: 20px;
@@ -82,6 +82,7 @@ button.special:hover {
   flex-direction: column;
   gap: 4px;
   background-color: black;
+  max-width: 100%;
 }
 
 .wrapper {

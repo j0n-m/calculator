@@ -60,7 +60,8 @@ function isOperand(str) {
 
 }
 function updateDisplay(text) {
-
+  text = +text;
+  text = (text.toString().length >= 8 ? text.toExponential(5) : text)
   display.textContent += text;
 
 }
