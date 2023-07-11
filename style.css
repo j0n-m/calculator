@@ -32,7 +32,7 @@ button:hover {
 }
 
 .operator:hover,
-.operator:focus {
+.operator:focus:not(.equalsBtn) {
   background-color: rgb(248, 217, 161);
 }
 
