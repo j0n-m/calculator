@@ -156,6 +156,8 @@ function calculateOutput(e) {
   }
 
   if (currentInput == "." && (calculator.inputOperand.includes(".") || calculator.operandStr.includes("."))) return;
+  if (currentInput == '0' && calculator.operandStr[0] == '0' && !calculator.operandStr.includes(".")) return;
+  if (calculator.operandStr.length == 1 && calculator.operandStr[0] == '0' && currentInput != ".") calculator.operandStr = "";
 
   //Checks if an operator is the current value
   if (isOperator(currentInput)) {
@@ -198,7 +200,7 @@ function calculateOutput(e) {
     if (calculator.operandStr && calculator.inputOperand.length && calculator.inputOperator.length) {
       calculator.inputOperand.push(calculator.operandStr);
       solveAsEquals()
-    } else if (calculator.inputOperand.length == 1 && currentInput == "=" && calculator.history) {
+    } else if (calculator.inputOperand.length == 1 && currentInput == "=" && calculator.history.length) {
       //contineus to solve operation when repeatedly hitting '='
       let operand1 = String(calculator.inputOperand[0]);
       let operator = calculator.history[1];
@@ -217,39 +219,11 @@ function calculateOutput(e) {
       calculator.inputOperand.push(solution);
       calculator.inputOperator = [];
       calculator.operandStr = "";
+    } else {
+      return;
     }
   }
 
-
-  // let storedOperators = calculator.inputOperand.match(operators); //array; example: ["+", "-"]
-
-
-  // if (storedOperators && storedOperators.length == 2) {
-  //   let [operand1, operand2] = calculator.inputOperand.split(operators);
-  //   solution = calculator.operate(operand1, storedOperators[0], operand2);
-  //   display.classList.add('solution');
-
-  //   updateDisplay(solution);
-  //   calculator.inputOperand = solution + storedOperators[1];
-
-  // } else if (currentInput == "=" && storedOperators.length == 1) {
-  //   let currentOperands = calculator.inputOperand.split(operators); //holds solution
-  //   let pastOperands = calculator.inputOperator.split(operators);
-  //   let pastOperator = calculator.inputOperator.match(operators);
-
-  //   let operand1 = currentOperands[0];
-  //   let operator = pastOperator[0];
-  //   let operand2 = pastOperands[1];
-
-  //   if (!operand2) {
-  //     return;
-  //   }
-
-  //   solution = calculator.operate(operand1, operator, operand2);
-  //   display.classList.add('solution');
-  //   updateDisplay(solution);
-  //   calculator.inputOperand = solution + '=';
-  // }
 
   console.log('inputOperands: ' + calculator.inputOperand);
   console.log('inputOperators: ' + calculator.inputOperator);
@@ -285,7 +259,7 @@ operatorBtns.forEach((operator) => {
 })
 decimalBtn.addEventListener('click', calculateOutput);
 deleteBtn.addEventListener('click', deleteFromOutput);
-document.addEventListener('keypress', calculateOutput);
+window.addEventListener('keypress', calculateOutput);
 
 
 clearAll();
