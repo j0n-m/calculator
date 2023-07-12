@@ -6,11 +6,13 @@
 }
 
 body {
+  user-select: none;
   font-family: sans-serif, 'Times New Roman';
   min-height: 100svh;
   display: flex;
   align-items: center;
   justify-content: center;
+  background-image: linear-gradient(to right, rgb(45, 159, 234), rgb(108, 232, 80));
 }
 
 button {
@@ -20,6 +22,8 @@ button {
   background-color: gray;
   color: white;
   border-radius: 4px;
+  outline: none;
+
 }
 
 button:hover {
@@ -70,7 +74,8 @@ button.special:hover {
   height: 500px;
   width: 400px;
   display: flex;
-  background-color: rgb(240, 149, 59);
+  /* background-color: rgb(240, 149, 59); */
+  background-color: rgba(0, 0, 0, .75);
   border-radius: 20px;
 }
 

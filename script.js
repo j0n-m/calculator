@@ -5,6 +5,8 @@ const operandBtns = document.querySelectorAll(".operand");
 const operatorBtns = document.querySelectorAll(".operator");
 const clearBtn = document.querySelector('.clearBtn');
 const flipSignBtn = document.querySelector('.flipSign');
+const decimalBtn = document.querySelector(".decimalBtn");
+const deleteBtn = document.querySelector('.deleteBtn');
 
 
 const calculator = {
@@ -24,7 +26,7 @@ const calculator = {
   },
   divide: function (a, b) {
     if (b === 0) {
-      return NaN;
+      return "Impossible";
     }
     return a / b;
   },
@@ -58,15 +60,18 @@ function isOperator(str) {
 
 }
 function isOperand(str) {
+  if (str == ".") return true;
   str = Number(str);
-  if (typeof str == 'number' && !isNaN(str)) {
-    return true;
-  }
+  if (typeof str == 'number' && !isNaN(str)) return true;
   return false;
 
 }
 function updateDisplay(text) {
-  text = +text;
+  text = text;
+  if (typeof text == "string") {
+    display.textContent = text;
+    return;
+  }
   text = (text.toString().length > 9 ? text.toExponential(5) : text)
   display.textContent += text;
 
@@ -90,9 +95,13 @@ function isDuplicateOperator(regex) {
 function solveAsEquals() {
   let solution = 0;
 
-  let operand1 = calculator.inputOperand[0];
-  let operand2 = calculator.inputOperand[1]
+  let operand1 = String(calculator.inputOperand[0]);
+  let operand2 = String(calculator.inputOperand[1]);
   let operator = calculator.inputOperator[0];
+  if (!isOperand(operand1) || !isOperand(operand2)) {
+    clearAll();
+    return;
+  }
   calculator.history[0] = operand1;
   calculator.history[1] = operator;
   calculator.history[2] = operand2;
@@ -108,10 +117,45 @@ function solveAsEquals() {
   calculator.inputOperator = [];
   calculator.operandStr = "";
 }
+
+function clearAll() {
+  calculator.inputOperand = [];
+  calculator.inputOperator = [];
+  calculator.operandStr = "";
+  calculator.history = [];
+
+  clearDisplay();
+  updateDisplay(0);
+  display.classList.add("solution");
+  console.clear();
+}
+function deleteFromOutput() {
+  if (calculator.operandStr.length == 0) return;
+  calculator.operandStr = calculator.operandStr.slice(0, calculator.operandStr.length - 1);
+  if (calculator.operandStr.length == 0) {
+    calculator.operandStr = "0";
+  }
+  updateDisplay(calculator.operandStr);
+}
+
 function calculateOutput(e) {
   let currentInput = e.target.textContent; //str
   let solution = 0;
 
+
+  if (e.key === "Enter") {
+    e.preventDefault();
+    currentInput = "=";
+  }
+  if (e.key && isOperand(e.key)) {
+    currentInput = e.key;
+  } else if (e.key && isOperator(e.key)) {
+    currentInput = e.key;
+  } else if (e.key == "=") {
+    currentInput = "=";
+  }
+
+  if (currentInput == "." && (calculator.inputOperand.includes(".") || calculator.operandStr.includes("."))) return;
 
   //Checks if an operator is the current value
   if (isOperator(currentInput)) {
@@ -120,23 +164,6 @@ function calculateOutput(e) {
     if (calculator.inputOperand.length >= 1 && calculator.inputOperator.length == 1 && calculator.operandStr.length) {
       calculator.inputOperand.push(calculator.operandStr);
 
-      // let operand1 = calculator.inputOperand[0];
-      // let operand2 = calculator.inputOperand[1]
-      // let operator = calculator.inputOperator[0];
-      // calculator.history[0] = operand1;
-      // calculator.history[1] = operator;
-      // calculator.history[2] = operand2;
-
-
-      // solution = calculator.operate(operand1, operator, operand2);
-      // display.classList.add('solution');
-      // clearDisplay();
-      // updateDisplay(solution);
-
-      // calculator.inputOperand = [];
-      // calculator.inputOperand.push(solution);
-      // calculator.inputOperator = [];
-      // calculator.operandStr = "";
       solveAsEquals();
 
     }
@@ -149,6 +176,7 @@ function calculateOutput(e) {
       calculator.inputOperand.push(calculator.operandStr);
       calculator.operandStr = "";
     }
+
     calculator.inputOperator.push(currentInput);
   } else if (display.className.includes('solution') && isOperand(currentInput)) {
     clearDisplay();
@@ -169,29 +197,12 @@ function calculateOutput(e) {
   if (currentInput == "=") {
     if (calculator.operandStr && calculator.inputOperand.length && calculator.inputOperator.length) {
       calculator.inputOperand.push(calculator.operandStr);
-      // let operand1 = calculator.inputOperand[0];
-      // let operand2 = calculator.inputOperand[1]
-      // let operator = calculator.inputOperator[0];
-      // calculator.history[0] = operand1;
-      // calculator.history[1] = operator;
-      // calculator.history[2] = operand2;
-
-
-      // solution = calculator.operate(operand1, operator, operand2);
-      // display.classList.add('solution');
-      // clearDisplay();
-      // updateDisplay(solution);
-
-      // calculator.inputOperand = [];
-      // calculator.inputOperand.push(solution);
-      // calculator.inputOperator = [];
-      // calculator.operandStr = "";
       solveAsEquals()
     } else if (calculator.inputOperand.length == 1 && currentInput == "=" && calculator.history) {
       //contineus to solve operation when repeatedly hitting '='
-      let operand1 = calculator.inputOperand[0];
+      let operand1 = String(calculator.inputOperand[0]);
       let operator = calculator.history[1];
-      let operand2 = calculator.history[2];
+      let operand2 = String(calculator.history[2]);
 
       calculator.history[0] = operand1;
       calculator.history[1] = operator;
@@ -240,7 +251,6 @@ function calculateOutput(e) {
   //   calculator.inputOperand = solution + '=';
   // }
 
-
   console.log('inputOperands: ' + calculator.inputOperand);
   console.log('inputOperators: ' + calculator.inputOperator);
   console.log('operandStr: ' + calculator.operandStr);
@@ -265,15 +275,7 @@ flipSignBtn.addEventListener("click", function () {
 })
 
 clearBtn.addEventListener("click", function () {
-  calculator.inputOperand = [];
-  calculator.inputOperator = [];
-  calculator.operandStr = "";
-  calculator.history = [];
-
-  clearDisplay();
-  updateDisplay(0);
-  display.classList.add("solution");
-  console.clear();
+  clearAll();
 })
 operandBtns.forEach((operand) => {
   operand.addEventListener("click", calculateOutput);
@@ -281,6 +283,9 @@ operandBtns.forEach((operand) => {
 operatorBtns.forEach((operator) => {
   operator.addEventListener("click", calculateOutput);
 })
+decimalBtn.addEventListener('click', calculateOutput);
+deleteBtn.addEventListener('click', deleteFromOutput);
+document.addEventListener('keypress', calculateOutput);
 
-updateDisplay(0);
-display.classList.add("solution");
+
+clearAll();
